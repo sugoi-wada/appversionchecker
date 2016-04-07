@@ -28,9 +28,7 @@ public class AndroidPublisherHelper {
         GoogleCredential credential = GoogleCredential.fromStream(context.getAssets().open(fileName), HTTP_TRANSPORT, JSON_FACTORY);
         credential = credential.createScoped(Collections.singleton(AndroidPublisherScopes.ANDROIDPUBLISHER));
 
-        return new AndroidPublisher.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
-                .setApplicationName(BuildConfig.APPLICATION_ID)
-                .build();
+        return new AndroidPublisher.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).build();
     }
 
     private static void newTrustedTransport() {
