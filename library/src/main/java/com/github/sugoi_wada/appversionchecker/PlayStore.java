@@ -90,6 +90,7 @@ public class PlayStore {
                     if (listing.getLanguage().equals(bcp47Language)) {
                         appListing.setLanguage(listing.getLanguage());
                         appListing.setRecentChanges(listing.getRecentChanges());
+                        break;
                     }
                 }
                 if (!singleSubscriber.isUnsubscribed()) {
