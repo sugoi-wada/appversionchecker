@@ -26,14 +26,21 @@ public class PlayStore {
         PRODUCTION, BETA, ALPHA;
     }
 
+    public static Observable<AppListing> checkForUpdates(Context context, String packageName, String jsonAssetsFileName) {
+        return checkForUpdates(context, packageName, jsonAssetsFileName, ReleaseType.PRODUCTION);
+    }
+
     public static Observable<AppListing> checkForUpdates(Context context, String jsonAssetsFileName) {
         return checkForUpdates(context, jsonAssetsFileName, ReleaseType.PRODUCTION);
     }
 
     public static Observable<AppListing> checkForUpdates(Context context, String jsonAssetsFileName, ReleaseType releaseType) {
+        return checkForUpdates(context, context.getPackageName(), jsonAssetsFileName, releaseType);
+    }
+
+    public static Observable<AppListing> checkForUpdates(Context context, String packageName, String jsonAssetsFileName, ReleaseType releaseType) {
         return Single.create((Single.OnSubscribe<AppListing>) singleSubscriber -> {
             AndroidPublisher publisher = null;
-            String packageName = context.getPackageName();
             try {
                 publisher = AndroidPublisherHelper.init(context, jsonAssetsFileName);
                 AndroidPublisher.Edits edits = publisher.edits();
