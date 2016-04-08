@@ -59,7 +59,7 @@ public class PlayStore {
                 // order by desc
                 Collections.sort(versionCodes, (lhs, rhs) -> rhs.compareTo(lhs));
                 int latestVersionCode = versionCodes.get(0);
-                int appVersionCode = context.getPackageManager().getPackageInfo(packageName, 0).versionCode;
+                int appVersionCode = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
                 if (appVersionCode >= latestVersionCode) {
                     // No updates.
                     if (!singleSubscriber.isUnsubscribed()) {
