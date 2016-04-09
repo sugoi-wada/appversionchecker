@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="AppVersionChecker-v0.0.4">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/sample/build/intermediates/exploded-aar/com.github.sugoi-wada/AppVersionChecker/v0.0.4/res" />
+      <root url="jar://$PROJECT_DIR$/sample/build/intermediates/exploded-aar/com.github.sugoi-wada/AppVersionChecker/v0.0.4/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
