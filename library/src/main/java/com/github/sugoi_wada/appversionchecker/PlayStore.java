@@ -3,6 +3,8 @@ package com.github.sugoi_wada.appversionchecker;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.http.HttpStatusCodes;
 import com.google.api.services.androidpublisher.AndroidPublisher;
 import com.google.api.services.androidpublisher.model.ApkListing;
 import com.google.api.services.androidpublisher.model.ApkListingsListResponse;
@@ -26,10 +28,6 @@ public class PlayStore {
         PRODUCTION, BETA, ALPHA;
     }
 
-    public static Observable<AppListing> checkForUpdates(Context context, String packageName, String jsonAssetsFileName) {
-        return checkForUpdates(context, packageName, jsonAssetsFileName, ReleaseType.PRODUCTION);
-    }
-
     public static Observable<AppListing> checkForUpdates(Context context, String jsonAssetsFileName) {
         return checkForUpdates(context, jsonAssetsFileName, ReleaseType.PRODUCTION);
     }
@@ -38,7 +36,7 @@ public class PlayStore {
         return checkForUpdates(context, context.getPackageName(), jsonAssetsFileName, releaseType);
     }
 
-    public static Observable<AppListing> checkForUpdates(Context context, String packageName, String jsonAssetsFileName, ReleaseType releaseType) {
+    private static Observable<AppListing> checkForUpdates(Context context, String packageName, String jsonAssetsFileName, ReleaseType releaseType) {
         return Single.create((Single.OnSubscribe<AppListing>) singleSubscriber -> {
             AndroidPublisher publisher = null;
             try {
@@ -97,8 +95,13 @@ public class PlayStore {
                     singleSubscriber.onSuccess(appListing);
                 }
             } catch (IOException | PackageManager.NameNotFoundException e) {
+                if (e instanceof GoogleJsonResponseException && ((GoogleJsonResponseException) e).getStatusCode() == HttpStatusCodes.STATUS_CODE_NOT_FOUND) {
+                    singleSubscriber.onSuccess(null);
+                    return;
+                }
                 if (!singleSubscriber.isUnsubscribed()) {
                     singleSubscriber.onError(e);
+                    return;
                 }
             }
         }).toObservable();

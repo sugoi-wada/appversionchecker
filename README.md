@@ -55,12 +55,6 @@ PlayStore.checkForUpdates(context, jsonAssetsFileName, PlayStore.ReleaseType.BET
 PlayStore.checkForUpdates(context, jsonAssetsFileName, PlayStore.ReleaseType.ALPHA);
 ```
 
-IF you use different applicationId by each buildType/flavor:
-
-```
-PlayStore.checkForUpdates(context, storePackageName, jsonAssetsFileName);
-```
-
 ## License
 
 Copyright (c) 2016 sugoi_wada.
