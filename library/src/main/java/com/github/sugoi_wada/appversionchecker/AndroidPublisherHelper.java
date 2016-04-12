@@ -1,11 +1,8 @@
 package com.github.sugoi_wada.appversionchecker;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 
-import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -28,7 +25,9 @@ public class AndroidPublisherHelper {
         GoogleCredential credential = GoogleCredential.fromStream(context.getAssets().open(fileName), HTTP_TRANSPORT, JSON_FACTORY);
         credential = credential.createScoped(Collections.singleton(AndroidPublisherScopes.ANDROIDPUBLISHER));
 
-        return new AndroidPublisher.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).build();
+        return new AndroidPublisher.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+                .setApplicationName(context.getPackageName())
+                .build();
     }
 
     private static void newTrustedTransport() {
