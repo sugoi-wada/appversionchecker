@@ -4,9 +4,6 @@ import android.os.Build;
 
 import java.util.Locale;
 
-/**
- * Created by watyaa on 16/04/07.
- */
 public class LocaleUtil {
     /**
      * Modified from:

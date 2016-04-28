@@ -5,23 +5,15 @@ import android.content.pm.PackageManager;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpStatusCodes;
-import com.google.api.services.androidpublisher.AndroidPublisher;
 import com.google.api.services.androidpublisher.model.ApkListing;
-import com.google.api.services.androidpublisher.model.ApkListingsListResponse;
-import com.google.api.services.androidpublisher.model.AppEdit;
-import com.google.api.services.androidpublisher.model.Track;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
 import rx.Observable;
 import rx.Single;
 
-/**
- * Created by watyaa on 16/04/06.
- */
 public class PlayStore {
 
     public enum ReleaseType {
@@ -38,25 +30,10 @@ public class PlayStore {
 
     private static Observable<AppListing> checkForUpdates(Context context, String packageName, String jsonAssetsFileName, ReleaseType releaseType) {
         return Single.create((Single.OnSubscribe<AppListing>) singleSubscriber -> {
-            AndroidPublisher publisher = null;
             try {
-                publisher = AndroidPublisherHelper.init(context, jsonAssetsFileName);
-                AndroidPublisher.Edits edits = publisher.edits();
-                AppEdit appEdit = edits.insert(packageName, null).execute();
-
-                Track track = edits.tracks().get(packageName, appEdit.getId(), releaseType.name().toLowerCase(Locale.US)).execute();
-                List<Integer> versionCodes = track.getVersionCodes();
-                if (versionCodes == null || versionCodes.isEmpty()) {
-                    // No updates
-                    if (!singleSubscriber.isUnsubscribed()) {
-                        singleSubscriber.onSuccess(null);
-                    }
-                    return;
-                }
-
-                // order by desc
-                Collections.sort(versionCodes, (lhs, rhs) -> rhs.compareTo(lhs));
-                int latestVersionCode = versionCodes.get(0);
+                StoreApi storeApi = new StoreApi();
+                storeApi.init(context, packageName, jsonAssetsFileName);
+                int latestVersionCode = storeApi.latestVersionCode(releaseType);
                 int appVersionCode = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
                 if (appVersionCode >= latestVersionCode) {
                     // No updates.
@@ -70,9 +47,7 @@ public class PlayStore {
                 appListing.setVersionCode(latestVersionCode);
                 appListing.setReleaseType(releaseType);
 
-                ApkListingsListResponse apkListingsList = edits.apklistings().list(packageName, appEdit.getId(), latestVersionCode).execute();
-                List<ApkListing> listings = apkListingsList.getListings();
-
+                List<ApkListing> listings = storeApi.apkListings(latestVersionCode);
                 if (listings == null || listings.isEmpty()) {
                     if (!singleSubscriber.isUnsubscribed()) {
                         singleSubscriber.onSuccess(appListing);

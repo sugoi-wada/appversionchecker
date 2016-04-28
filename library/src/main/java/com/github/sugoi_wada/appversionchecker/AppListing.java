@@ -1,8 +1,5 @@
 package com.github.sugoi_wada.appversionchecker;
 
-/**
- * Created by watyaa on 16/04/07.
- */
 public class AppListing {
     private int versionCode;
     private PlayStore.ReleaseType releaseType;
