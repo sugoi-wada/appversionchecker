@@ -5,7 +5,7 @@ An Android library that checks for your application's updates on Google Play Sto
 ## Requirements
 
 - Minimum Android API level 15 to use
-- RxJava 1.1.2
+- RxJava 1.1.x
 
 ## Getting Started
 
@@ -38,7 +38,7 @@ Add the dependency to your application module:
 
 ```
 dependencies {
-    compile 'com.github.sugoi-wada:AppVersionChecker:v0.1.0'
+    compile 'com.github.sugoi-wada:appversionchecker:v0.1.0'
 }
 ```
 
