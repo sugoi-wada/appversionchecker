@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'com.github.sugoi-wada'
@@ -12,14 +11,10 @@ android {
         minSdkVersion 15
         targetSdkVersion 24
         versionCode 6
-        versionName "0.1.2"
+        versionName "0.1.3"
         consumerProguardFiles 'proguard-rules.pro'
     }
     buildTypes {
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 

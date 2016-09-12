@@ -13,6 +13,7 @@ import java.util.Locale;
 
 import rx.Observable;
 import rx.Single;
+import rx.SingleSubscriber;
 
 public class PlayStore {
 
@@ -28,55 +29,58 @@ public class PlayStore {
         return checkForUpdates(context, context.getPackageName(), jsonAssetsFileName, releaseType);
     }
 
-    private static Observable<AppListing> checkForUpdates(Context context, String packageName, String jsonAssetsFileName, ReleaseType releaseType) {
-        return Single.create((Single.OnSubscribe<AppListing>) singleSubscriber -> {
-            try {
-                StoreApi storeApi = new StoreApi();
-                storeApi.init(context, packageName, jsonAssetsFileName);
-                int latestVersionCode = storeApi.latestVersionCode(releaseType);
-                int appVersionCode = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
-                if (appVersionCode >= latestVersionCode) {
-                    // No updates.
-                    if (!singleSubscriber.isUnsubscribed()) {
-                        singleSubscriber.onSuccess(null);
+    private static Observable<AppListing> checkForUpdates(final Context context, final String packageName, final String jsonAssetsFileName, final ReleaseType releaseType) {
+        return Single.create(new Single.OnSubscribe<AppListing>() {
+            @Override
+            public void call(SingleSubscriber<? super AppListing> singleSubscriber) {
+                try {
+                    StoreApi storeApi = new StoreApi();
+                    storeApi.init(context, packageName, jsonAssetsFileName);
+                    int latestVersionCode = storeApi.latestVersionCode(releaseType);
+                    int appVersionCode = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
+                    if (appVersionCode >= latestVersionCode) {
+                        // No updates.
+                        if (!singleSubscriber.isUnsubscribed()) {
+                            singleSubscriber.onSuccess(null);
+                        }
+                        return;
                     }
-                    return;
-                }
 
-                AppListing appListing = new AppListing();
-                appListing.setVersionCode(latestVersionCode);
-                appListing.setReleaseType(releaseType);
+                    AppListing appListing = new AppListing();
+                    appListing.setVersionCode(latestVersionCode);
+                    appListing.setReleaseType(releaseType);
 
-                List<ApkListing> listings = storeApi.apkListings(latestVersionCode);
-                if (listings == null || listings.isEmpty()) {
+                    List<ApkListing> listings = storeApi.apkListings(latestVersionCode);
+                    if (listings == null || listings.isEmpty()) {
+                        if (!singleSubscriber.isUnsubscribed()) {
+                            singleSubscriber.onSuccess(appListing);
+                        }
+                        return;
+                    }
+
+                    appListing.setDefaultLanguage(listings.get(0).getLanguage());
+                    appListing.setDefaultRecentChanges(listings.get(0).getRecentChanges());
+
+                    String bcp47Language = LocaleUtil.toBcp47Language(Locale.getDefault());
+                    for (ApkListing listing : listings) {
+                        if (listing.getLanguage().equals(bcp47Language)) {
+                            appListing.setLanguage(listing.getLanguage());
+                            appListing.setRecentChanges(listing.getRecentChanges());
+                            break;
+                        }
+                    }
                     if (!singleSubscriber.isUnsubscribed()) {
                         singleSubscriber.onSuccess(appListing);
                     }
-                    return;
-                }
-
-                appListing.setDefaultLanguage(listings.get(0).getLanguage());
-                appListing.setDefaultRecentChanges(listings.get(0).getRecentChanges());
-
-                String bcp47Language = LocaleUtil.toBcp47Language(Locale.getDefault());
-                for (ApkListing listing : listings) {
-                    if (listing.getLanguage().equals(bcp47Language)) {
-                        appListing.setLanguage(listing.getLanguage());
-                        appListing.setRecentChanges(listing.getRecentChanges());
-                        break;
+                } catch (IOException | PackageManager.NameNotFoundException e) {
+                    if (e instanceof GoogleJsonResponseException && ((GoogleJsonResponseException) e).getStatusCode() == HttpStatusCodes.STATUS_CODE_NOT_FOUND) {
+                        singleSubscriber.onSuccess(null);
+                        return;
                     }
-                }
-                if (!singleSubscriber.isUnsubscribed()) {
-                    singleSubscriber.onSuccess(appListing);
-                }
-            } catch (IOException | PackageManager.NameNotFoundException e) {
-                if (e instanceof GoogleJsonResponseException && ((GoogleJsonResponseException) e).getStatusCode() == HttpStatusCodes.STATUS_CODE_NOT_FOUND) {
-                    singleSubscriber.onSuccess(null);
-                    return;
-                }
-                if (!singleSubscriber.isUnsubscribed()) {
-                    singleSubscriber.onError(e);
-                    return;
+                    if (!singleSubscriber.isUnsubscribed()) {
+                        singleSubscriber.onError(e);
+                        return;
+                    }
                 }
             }
         }).toObservable();

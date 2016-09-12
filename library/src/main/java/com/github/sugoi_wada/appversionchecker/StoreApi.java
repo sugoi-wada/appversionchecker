@@ -9,6 +9,7 @@ import com.google.api.services.androidpublisher.model.Track;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -37,7 +38,12 @@ public class StoreApi {
         }
 
         // order by desc
-        Collections.sort(versionCodes, (lhs, rhs) -> rhs.compareTo(lhs));
+        Collections.sort(versionCodes, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer lhs, Integer rhs) {
+                return rhs.compareTo(lhs);
+            }
+        });
         return versionCodes.get(0);
     }
 
