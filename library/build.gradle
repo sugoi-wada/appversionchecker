@@ -21,7 +21,8 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    provided 'io.reactivex:rxjava:1.1.9'
+    compile 'io.reactivex:rxjava:1.1.9'
+    compile 'com.artemzin.rxjava:proguard-rules:1.1.9.0'
     compile('com.google.apis:google-api-services-androidpublisher:v2-rev35-1.22.0') {
         exclude module: 'httpclient'
         exclude group: 'org.apache.httpcomponents'
