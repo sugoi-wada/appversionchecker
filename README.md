@@ -38,7 +38,7 @@ Add the dependency to your application module:
 
 ```
 dependencies {
-    compile 'com.github.sugoi-wada:appversionchecker:v0.1.2'
+    compile 'com.github.sugoi-wada:appversionchecker:0.1.3'
 }
 ```
 
