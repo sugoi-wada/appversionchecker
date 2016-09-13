@@ -51,3 +51,6 @@
 # Suppress warnings on sun.misc.Unsafe
 -dontnote sun.misc.Unsafe
 -dontwarn sun.misc.Unsafe
+
+-keep class com.google.common.collect.**
+-dontwarn com.google.common.collect.**
