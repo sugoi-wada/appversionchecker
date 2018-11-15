@@ -1,3 +1,7 @@
+# DEPRICATED
+
+Please use other libraries.
+
 # Android AppVersionChecker [![](https://jitpack.io/v/sugoi-wada/AppVersionChecker.svg)](https://jitpack.io/#sugoi-wada/AppVersionChecker)
 
 An Android library that checks for your application's updates on Google Play Store. This library uses Android Publisher API.
